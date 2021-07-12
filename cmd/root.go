@@ -31,7 +31,7 @@ var rootCmd = &cobra.Command{
 	Long: `The plugin allows to substitue the values of environment variables withing a CICD pipeline.`,
 		
 		Run: func(cmd *cobra.Command, args []string) { 
-			exCmd := exec.Command("/bin/sh", "-c", fmt.Sprintf("envsubst < %[1]s > %[1]s.temp && mv %[1]s.temp %[1]s", file))
+			exCmd := exec.Command("/bin/sh", "-c", fmt.Sprintf("envsubst < %[1]s > %[1]s.tmp && mv %[1]s.tmp %[1]s", file))
 			stdout, err := exCmd.Output()
 			if err != nil {
 				fmt.Println(err.Error())
