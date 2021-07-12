@@ -74,7 +74,4 @@ checksums_filename="releases/v${version}_checksums.txt"
 # Unpack the binary.
 tar xzf "${binary_filename}" -C "releases/v${version}"
 mv "releases/v${version}/bin/subenv" "bin/subenv"
-
-#clean up
-rm -rf releases/
 exit 0
