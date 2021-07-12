@@ -1,10 +1,10 @@
 name: "subenv"
-version: "0.0.13"
+version: "0.0.14"
 usage: "Substitutes the values of environment variables."
 description: |-
   The plugin allows to substitue the values of environment variables withing a CICD pipeline.
 useTunnel: true
 command: "bin/subenv"
 hooks:
-  install: "$HELM_PLUGIN_DIR/subenv.sh"
-  update: "$HELM_PLUGIN_DIR/subenv.sh"
+  install: "cd $HELM_PLUGIN_DIR; ./subenv.sh"
+  update: "cd $HELM_PLUGIN_DIR; ./subenv.sh"
