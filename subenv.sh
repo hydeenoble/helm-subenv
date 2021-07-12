@@ -25,7 +25,7 @@ on_exit() {
 trap on_exit EXIT
 
 version="$(cat plugin.yaml | grep "version" | cut -d '"' -f 2)"
-echo "Downloading and installing helm-s3 v${version} ..."
+echo "Downloading and installing helm-subenv v${version} ..."
 
 binary_url=""
 if [ "$(uname)" == "Darwin" ]; then 
@@ -74,4 +74,7 @@ checksums_filename="releases/v${version}_checksums.txt"
 # Unpack the binary.
 tar xzf "${binary_filename}" -C "releases/v${version}"
 mv "releases/v${version}/bin/subenv" "bin/subenv"
+
+#clean up
+rm -rf releases/
 exit 0
