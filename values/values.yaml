@@ -1,0 +1,6 @@
+alice:
+  enabled: "${ALICE_DEPLOY}"
+  image:
+    repository: $REGISTRY/$REPOSITORY_NAME
+    tag: web-staging-$CI_PIPELINE_ID
+    pullPolicy: IfNotPresent
