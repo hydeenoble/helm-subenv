@@ -1,5 +1,5 @@
 name: "subenv"
-version: "0.1.0"
+version: "0.0.12"
 usage: "Substitutes the values of environment variables."
 description: |-
   The plugin allows to substitue the values of environment variables withing a CICD pipeline.
