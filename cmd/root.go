@@ -29,20 +29,15 @@ var rootCmd = &cobra.Command{
 	Use:   "subenv",
 	Short: "Substitutes the values of environment variables.",
 	Long: `The plugin allows to substitue the values of environment variables withing a CICD pipeline.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
+		
 		Run: func(cmd *cobra.Command, args []string) { 
-			// fmt.Println("Specify values file with `-f`")
-			// fmt.Println(file)
-			// exCmd := exec.Command("envsubst", "--help")
-			// exCmd := exec.Command("envsubst","<", "values.yaml", ">", "values.yaml.tmp")
-			exCmd := exec.Command("/bin/sh", "-c", fmt.Sprintf("envsubst < %s", file))
-			// exCmd := exec.Command("ls")
+			exCmd := exec.Command("/bin/sh", "-c", fmt.Sprintf("envsubst < %[1]s > %[1]s.temp && mv %[1]s.temp %[1]s", file))
 			stdout, err := exCmd.Output()
-			fmt.Println("Command finished with error: ", err)
-			fmt.Println(fmt.Sprintf("envsubst %s", file))
+			if err != nil {
+				fmt.Println(err.Error())
+				return
+			}
 			fmt.Print(string(stdout))
-			// fmt.Println("Here o")
 		},
 }
 
