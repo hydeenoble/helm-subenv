@@ -8,8 +8,9 @@ This Helm plugin allows you to substitue the environment variables specified in 
 
 The installation itself is simple as:
 
-    $ helm plugin install https://github.com/hydeenoble/helm-subenv.git
-
+```bash
+helm plugin install https://github.com/hydeenoble/helm-subenv.git
+```
 To use the plugin, you do not need any special dependencies. The installer will
 download versioned release with prebuilt binary from [github releases](https://github.com/hydeenoble/helm-subenv/releases).
 
