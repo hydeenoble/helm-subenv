@@ -34,7 +34,7 @@ REGISTRY => docker.com
 IMAGE_NAME => helm-subenv
 IMAGE_TAG => test
 ```
-Run plugin:
+Substitute Env:
 ```
 helm subenv -f values.yaml
 ```
@@ -50,6 +50,11 @@ image:
 image:
   repository: docker.com/helm-subenv
   tag:
+```
+
+## Uninstall
+```
+helm plugin remove subenv
 ```
 ## License
 
