@@ -15,7 +15,7 @@ download versioned release with prebuilt binary from [github releases](https://g
 
 ## Example
 Sample helm values file:
-```
+```yaml
 # values.yaml
 
 image:
@@ -23,17 +23,24 @@ image:
   tag: $IMAGE_TAG
 ```
 Environment variables configured in your environment (this should most likely be configure with you CI environment): 
-```
+```txt
 REGISTRY => docker.com
 IMAGE_NAME => helm-subenv
 IMAGE_TAG => test
 ```
 
 Result: 
-```
+```yaml
 image:
   repository: docker.com/helm-subenv
   tag: test
+```
+**Note:** If the value of the environment variable does not exit, it will be replaced with an empty string. For instance, from the above example, if `IMAGE_TAG` does not exist as an environment variable in the environment the result would have been: 
+
+```yaml
+image:
+  repository: docker.com/helm-subenv
+  tag:
 ```
 ## License
 
