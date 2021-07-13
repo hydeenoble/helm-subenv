@@ -17,11 +17,8 @@ import (
 	"github.com/spf13/cobra"
 	"os"
 	"os/exec"
-
-	"github.com/spf13/viper"
 )
 
-var cfgFile string
 var file string
 
 // rootCmd represents the base command when called without any subcommands
@@ -51,43 +48,14 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig)
+	cobra.OnInitialize()
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.tctl.yaml)")
-
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	// rootCmd.Flags().BoolP("file", "f", false, "Please specify values file.")
-	rootCmd.Flags().StringVarP(&file, "file", "f", "", "specify values file.")
+	rootCmd.Flags().StringVarP(&file, "file", "f", "", "specify path to values file.")
 	rootCmd.MarkFlagRequired("file")
-}
-
-// initConfig reads in config file and ENV variables if set.
-func initConfig() {
-	if cfgFile != "" {
-		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
-	} else {
-		// Find home directory.
-		home, err := os.UserHomeDir()
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-
-		// Search config in home directory with name ".tctl" (without extension).
-		viper.AddConfigPath(home)
-		viper.SetConfigName(".tctl")
-	}
-
-	viper.AutomaticEnv() // read in environment variables that match
-
-	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
-	}
 }
