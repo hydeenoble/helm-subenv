@@ -2,7 +2,7 @@
 [![License MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
 [![GitHub release](https://img.shields.io/github/v/release/hydeenoble/helm-subenv.svg)](https://github.com/hydeenoble/helm-subenv/releases)
 
-This Helm plugin allows you to substitue the environment variables specified in your helm values file with their respective values in the environment from within a CICD pipeline.
+This Helm plugin allows you to substitute the environment variables specified in your helm values file with their respective values in the environment from within a CICD pipeline.
 
 ## Install
 
