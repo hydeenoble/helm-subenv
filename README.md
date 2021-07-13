@@ -14,6 +14,11 @@ helm plugin install https://github.com/hydeenoble/helm-subenv.git
 To use the plugin, you do not need any special dependencies. The installer will
 download versioned release with prebuilt binary from [github releases](https://github.com/hydeenoble/helm-subenv/releases).
 
+## Use
+```bash
+helm subenv -f <path to values file>
+```
+
 ## Example
 Sample helm values file:
 ```yaml
@@ -29,7 +34,10 @@ REGISTRY => docker.com
 IMAGE_NAME => helm-subenv
 IMAGE_TAG => test
 ```
-
+Run plugin:
+```
+helm subenv -f values.yaml
+```
 Result: 
 ```yaml
 image:
