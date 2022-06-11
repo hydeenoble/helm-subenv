@@ -15,27 +15,68 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	"io/ioutil"
+	"log"
 	"os"
-	"os/exec"
+	"path/filepath"
 )
 
-var file string
+// type Files []string
+var paths []string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "subenv",
 	Short: "Substitutes the values of environment variables.",
-	Long: `The plugin allows to substitue the values of environment variables withing a CICD pipeline.`,
-		
-		Run: func(cmd *cobra.Command, args []string) { 
-			exCmd := exec.Command("/bin/sh", "-c", fmt.Sprintf("envsubst < %[1]s > %[1]s.tmp && mv %[1]s.tmp %[1]s", file))
-			stdout, err := exCmd.Output()
+	Long:  `The plugin allows to substitue the values of environment variables withing a CICD pipeline.`,
+
+	Run: func(cmd *cobra.Command, args []string) {
+
+		for _, path := range paths {
+
+			dir, err := os.Stat(path)
+
 			if err != nil {
-				fmt.Println(err.Error())
-				return
+				log.Fatal(err)
 			}
-			fmt.Print(string(stdout))
-		},
+
+			if dir.IsDir() {
+				err := filepath.Walk(path,
+					func(subPath string, info os.FileInfo, err error) error {
+						if err != nil {
+							return err
+						}
+						if !info.IsDir() {
+							expandEnv(subPath)
+						}
+						return nil
+					})
+
+				if err != nil {
+					log.Fatal(err)
+				}
+			} else {
+				expandEnv(path)
+			}
+
+		}
+	},
+}
+
+func expandEnv(filePath string) {
+	content, err := ioutil.ReadFile(filePath)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	newContent := os.ExpandEnv(string(content))
+
+	err = ioutil.WriteFile(filePath, []byte(newContent), 0777)
+
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -56,6 +97,6 @@ func init() {
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().StringVarP(&file, "file", "f", "", "specify path to values file.")
+	rootCmd.Flags().StringArrayVarP(&paths, "file", "f", []string{}, "specify path to values file. You can configure the flag multiple times for different files.")
 	rootCmd.MarkFlagRequired("file")
 }

@@ -13,9 +13,28 @@ helm plugin install https://github.com/hydeenoble/helm-subenv.git
 ```
 To use the plugin, you do not need any special dependencies. The installer will download the latest release with prebuilt binary from [GitHub releases](https://github.com/hydeenoble/helm-subenv/releases).
 
-## Use
+## Usage
+
+### Single file usage
 ```bash
 helm subenv -f <path to values file>
+```
+
+### Multiple files usage
+```bash
+helm subenv -f <path to values file> -f <path to values file> -f <path to values file>
+```
+
+### Directory usage
+The plugin can also be used to recursively substitute environment variables in all the files in a specified directory.
+```bash
+helm subenv -f <path to directory>
+```
+
+### Mix files and directories
+You can also decide to mix files and directories:
+```bash
+helm subenv -f <path to values file> -f <path to directory>
 ```
 
 ## Example
