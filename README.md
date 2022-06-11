@@ -11,8 +11,7 @@ The installation itself is simple as:
 ```bash
 helm plugin install https://github.com/hydeenoble/helm-subenv.git
 ```
-To use the plugin, you do not need any special dependencies. The installer will
-download versioned release with prebuilt binary from [github releases](https://github.com/hydeenoble/helm-subenv/releases).
+To use the plugin, you do not need any special dependencies. The installer will download the latest release with prebuilt binary from [GitHub releases](https://github.com/hydeenoble/helm-subenv/releases).
 
 ## Use
 ```bash
@@ -28,7 +27,7 @@ image:
   repository: $REGISTRY/$IMAGE_NAME
   tag: $IMAGE_TAG
 ```
-Environment variables configured in your environment (this should most likely be configure with you CI environment): 
+Environment variables configured in your environment (this should most likely be configured with your CI environment): 
 ```txt
 REGISTRY => docker.com
 IMAGE_NAME => helm-subenv
@@ -44,7 +43,7 @@ image:
   repository: docker.com/helm-subenv
   tag: test
 ```
-**Note:** If the value of the environment variable does not exit, it will be replaced with an empty string. For instance, from the above example, if `IMAGE_TAG` does not exist as an environment variable in the environment the result would have been: 
+**Note:** If the value of the environment variable does not exist, it will be replaced with an empty string. For instance, from the above example, if `IMAGE_TAG` does not exist as an environment variable in the environment the result would have been: 
 
 ```yaml
 image:
