@@ -11,6 +11,11 @@ The installation itself is simple as:
 ```bash
 helm plugin install https://github.com/hydeenoble/helm-subenv.git
 ```
+You can install a specific release version:
+```bash
+helm plugin install https://github.com/hydeenoble/helm-subenv.git --version <release version>
+```
+
 To use the plugin, you do not need any special dependencies. The installer will download the latest release with prebuilt binary from [GitHub releases](https://github.com/hydeenoble/helm-subenv/releases).
 
 ## Usage
