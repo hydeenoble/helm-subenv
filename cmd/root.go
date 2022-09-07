@@ -19,6 +19,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"github.com/a8m/envsubst"
 )
 
 // type Files []string
@@ -64,13 +65,11 @@ var rootCmd = &cobra.Command{
 }
 
 func expandEnv(filePath string) {
-	content, err := ioutil.ReadFile(filePath)
+	newContent, err := envsubst.ReadFile(filePath)
 
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	newContent := os.ExpandEnv(string(content))
 
 	err = ioutil.WriteFile(filePath, []byte(newContent), 0777)
 
