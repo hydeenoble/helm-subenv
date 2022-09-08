@@ -59,7 +59,7 @@ IMAGE_NAME => helm-subenv
 IMAGE_TAG => test
 ```
 Substitute Env:
-```
+```bash
 helm subenv -f values.yaml
 ```
 Result: 
@@ -77,8 +77,15 @@ image:
 ```
 
 ## Uninstall
-```
+```bash
 helm plugin remove subenv
+```
+
+## Testing locally
+To test locally, run the command below to build and run the binary: 
+> You need to have [Go](https://go.dev/) installed. Make sure to set `$GOPATH`
+```bash
+go build -o subenv && ./subenv -f </path/to/values/file>
 ```
 ## License
 
