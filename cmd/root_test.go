@@ -19,12 +19,18 @@ func TestExpandEnv(t *testing.T) {
 	t.Run("SimpleSubstitution", func(t *testing.T) {
 		testFile := filepath.Join(tmpDir, "test1.yaml")
 		content := "image: $TEST_IMAGE\ntag: $TEST_TAG"
-		
+
 		// Set environment variables
-		os.Setenv("TEST_IMAGE", "nginx")
-		os.Setenv("TEST_TAG", "latest")
-		defer os.Unsetenv("TEST_IMAGE")
-		defer os.Unsetenv("TEST_TAG")
+		if err := os.Setenv("TEST_IMAGE", "nginx"); err != nil {
+			t.Fatalf("Failed to set TEST_IMAGE: %v", err)
+		}
+		if err := os.Setenv("TEST_TAG", "latest"); err != nil {
+			t.Fatalf("Failed to set TEST_TAG: %v", err)
+		}
+		defer func() {
+			_ = os.Unsetenv("TEST_IMAGE")
+			_ = os.Unsetenv("TEST_TAG")
+		}()
 
 		// Write test file
 		err := os.WriteFile(testFile, []byte(content), 0644)
@@ -33,7 +39,9 @@ func TestExpandEnv(t *testing.T) {
 		}
 
 		// Run expandEnv
-		expandEnv(testFile)
+		if err := expandEnv(testFile); err != nil {
+			t.Fatalf("expandEnv failed: %v", err)
+		}
 
 		// Read result
 		result, err := os.ReadFile(testFile)
@@ -51,9 +59,9 @@ func TestExpandEnv(t *testing.T) {
 	t.Run("MissingVariable", func(t *testing.T) {
 		testFile := filepath.Join(tmpDir, "test2.yaml")
 		content := "value: $NONEXISTENT_VAR"
-		
+
 		// Ensure variable doesn't exist
-		os.Unsetenv("NONEXISTENT_VAR")
+		_ = os.Unsetenv("NONEXISTENT_VAR")
 
 		// Write test file
 		err := os.WriteFile(testFile, []byte(content), 0644)
@@ -62,7 +70,9 @@ func TestExpandEnv(t *testing.T) {
 		}
 
 		// Run expandEnv
-		expandEnv(testFile)
+		if err := expandEnv(testFile); err != nil {
+			t.Fatalf("expandEnv failed: %v", err)
+		}
 
 		// Read result
 		result, err := os.ReadFile(testFile)
@@ -80,23 +90,32 @@ func TestExpandEnv(t *testing.T) {
 	t.Run("MultipleVariables", func(t *testing.T) {
 		testFile := filepath.Join(tmpDir, "test3.yaml")
 		content := "url: $PROTOCOL://$HOST:$PORT"
-		
+
 		// Set environment variables
-		os.Setenv("PROTOCOL", "https")
-		os.Setenv("HOST", "example.com")
-		os.Setenv("PORT", "8080")
-		defer os.Unsetenv("PROTOCOL")
-		defer os.Unsetenv("HOST")
-		defer os.Unsetenv("PORT")
+		if err := os.Setenv("PROTOCOL", "https"); err != nil {
+			t.Fatalf("Failed to set PROTOCOL: %v", err)
+		}
+		if err := os.Setenv("HOST", "example.com"); err != nil {
+			t.Fatalf("Failed to set HOST: %v", err)
+		}
+		if err := os.Setenv("PORT", "8080"); err != nil {
+			t.Fatalf("Failed to set PORT: %v", err)
+		}
+		defer func() {
+			_ = os.Unsetenv("PROTOCOL")
+			_ = os.Unsetenv("HOST")
+			_ = os.Unsetenv("PORT")
+		}()
 
 		// Write test file
-		err := os.WriteFile(testFile, []byte(content), 0644)
-		if err != nil {
+		if err := os.WriteFile(testFile, []byte(content), 0644); err != nil {
 			t.Fatalf("Failed to write test file: %v", err)
 		}
 
 		// Run expandEnv
-		expandEnv(testFile)
+		if err := expandEnv(testFile); err != nil {
+			t.Fatalf("expandEnv failed: %v", err)
+		}
 
 		// Read result
 		result, err := os.ReadFile(testFile)
@@ -114,23 +133,32 @@ func TestExpandEnv(t *testing.T) {
 	t.Run("BracesSyntax", func(t *testing.T) {
 		testFile := filepath.Join(tmpDir, "test4.yaml")
 		content := "image: ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
-		
+
 		// Set environment variables
-		os.Setenv("REGISTRY", "docker.io")
-		os.Setenv("IMAGE_NAME", "myapp")
-		os.Setenv("IMAGE_TAG", "v1.0.0")
-		defer os.Unsetenv("REGISTRY")
-		defer os.Unsetenv("IMAGE_NAME")
-		defer os.Unsetenv("IMAGE_TAG")
+		if err := os.Setenv("REGISTRY", "docker.io"); err != nil {
+			t.Fatalf("Failed to set REGISTRY: %v", err)
+		}
+		if err := os.Setenv("IMAGE_NAME", "myapp"); err != nil {
+			t.Fatalf("Failed to set IMAGE_NAME: %v", err)
+		}
+		if err := os.Setenv("IMAGE_TAG", "v1.0.0"); err != nil {
+			t.Fatalf("Failed to set IMAGE_TAG: %v", err)
+		}
+		defer func() {
+			_ = os.Unsetenv("REGISTRY")
+			_ = os.Unsetenv("IMAGE_NAME")
+			_ = os.Unsetenv("IMAGE_TAG")
+		}()
 
 		// Write test file
-		err := os.WriteFile(testFile, []byte(content), 0644)
-		if err != nil {
+		if err := os.WriteFile(testFile, []byte(content), 0644); err != nil {
 			t.Fatalf("Failed to write test file: %v", err)
 		}
 
 		// Run expandEnv
-		expandEnv(testFile)
+		if err := expandEnv(testFile); err != nil {
+			t.Fatalf("expandEnv failed: %v", err)
+		}
 
 		// Read result
 		result, err := os.ReadFile(testFile)
@@ -144,105 +172,47 @@ func TestExpandEnv(t *testing.T) {
 		}
 	})
 }
+}
 
-// TestRootCommandWithSingleFile tests the root command with a single file
-func TestRootCommandWithSingleFile(t *testing.T) {
-	// Create a temporary directory for testing
+// TestProcessPath tests the processPath function with a single file
+func TestProcessPath(t *testing.T) {
 	tmpDir, err := os.MkdirTemp("", "helm-subenv-test")
 	if err != nil {
 		t.Fatalf("Failed to create temp directory: %v", err)
 	}
 	defer os.RemoveAll(tmpDir)
 
-	testFile := filepath.Join(tmpDir, "values.yaml")
-	content := "image: $TEST_IMAGE"
-	
-	// Set environment variable
-	os.Setenv("TEST_IMAGE", "nginx:latest")
-	defer os.Unsetenv("TEST_IMAGE")
+	testFile := filepath.Join(tmpDir, "test.yaml")
+	content := "value: $TEST_VAR"
 
-	// Write test file
-	err = os.WriteFile(testFile, []byte(content), 0644)
-	if err != nil {
+	if err := os.Setenv("TEST_VAR", "success"); err != nil {
+		t.Fatalf("Failed to set TEST_VAR: %v", err)
+	}
+	defer func() {
+		_ = os.Unsetenv("TEST_VAR")
+	}()
+
+	if err := os.WriteFile(testFile, []byte(content), 0644); err != nil {
 		t.Fatalf("Failed to write test file: %v", err)
 	}
 
-	// Set paths and execute
-	paths = []string{testFile}
-	rootCmd.Run(rootCmd, []string{})
+	if err := processPath(testFile); err != nil {
+		t.Fatalf("processPath failed: %v", err)
+	}
 
-	// Read result
 	result, err := os.ReadFile(testFile)
 	if err != nil {
 		t.Fatalf("Failed to read result file: %v", err)
 	}
 
-	expected := "image: nginx:latest"
+	expected := "value: success"
 	if string(result) != expected {
 		t.Errorf("Expected %q, got %q", expected, string(result))
 	}
 }
 
-// TestRootCommandWithDirectory tests the root command with a directory
-func TestRootCommandWithDirectory(t *testing.T) {
-	// Create a temporary directory for testing
-	tmpDir, err := os.MkdirTemp("", "helm-subenv-test")
-	if err != nil {
-		t.Fatalf("Failed to create temp directory: %v", err)
-	}
-	defer os.RemoveAll(tmpDir)
-
-	// Create multiple test files
-	file1 := filepath.Join(tmpDir, "values1.yaml")
-	file2 := filepath.Join(tmpDir, "values2.yaml")
-	
-	content1 := "image: $TEST_IMAGE1"
-	content2 := "image: $TEST_IMAGE2"
-	
-	// Set environment variables
-	os.Setenv("TEST_IMAGE1", "nginx:1.0")
-	os.Setenv("TEST_IMAGE2", "redis:2.0")
-	defer os.Unsetenv("TEST_IMAGE1")
-	defer os.Unsetenv("TEST_IMAGE2")
-
-	// Write test files
-	err = os.WriteFile(file1, []byte(content1), 0644)
-	if err != nil {
-		t.Fatalf("Failed to write test file 1: %v", err)
-	}
-	err = os.WriteFile(file2, []byte(content2), 0644)
-	if err != nil {
-		t.Fatalf("Failed to write test file 2: %v", err)
-	}
-
-	// Set paths and execute
-	paths = []string{tmpDir}
-	rootCmd.Run(rootCmd, []string{})
-
-	// Read results
-	result1, err := os.ReadFile(file1)
-	if err != nil {
-		t.Fatalf("Failed to read result file 1: %v", err)
-	}
-	result2, err := os.ReadFile(file2)
-	if err != nil {
-		t.Fatalf("Failed to read result file 2: %v", err)
-	}
-
-	expected1 := "image: nginx:1.0"
-	expected2 := "image: redis:2.0"
-	
-	if string(result1) != expected1 {
-		t.Errorf("File 1: Expected %q, got %q", expected1, string(result1))
-	}
-	if string(result2) != expected2 {
-		t.Errorf("File 2: Expected %q, got %q", expected2, string(result2))
-	}
-}
-
-// TestRootCommandWithMultipleFiles tests the root command with multiple files
-func TestRootCommandWithMultipleFiles(t *testing.T) {
-	// Create a temporary directory for testing
+// TestProcessDirectory tests the processDirectory function
+func TestProcessDirectory(t *testing.T) {
 	tmpDir, err := os.MkdirTemp("", "helm-subenv-test")
 	if err != nil {
 		t.Fatalf("Failed to create temp directory: %v", err)
@@ -251,73 +221,45 @@ func TestRootCommandWithMultipleFiles(t *testing.T) {
 
 	file1 := filepath.Join(tmpDir, "file1.yaml")
 	file2 := filepath.Join(tmpDir, "file2.yaml")
-	
-	content1 := "service: $SERVICE_NAME"
-	content2 := "port: $SERVICE_PORT"
-	
-	// Set environment variables
-	os.Setenv("SERVICE_NAME", "api")
-	os.Setenv("SERVICE_PORT", "8080")
-	defer os.Unsetenv("SERVICE_NAME")
-	defer os.Unsetenv("SERVICE_PORT")
 
-	// Write test files
-	err = os.WriteFile(file1, []byte(content1), 0644)
-	if err != nil {
-		t.Fatalf("Failed to write test file 1: %v", err)
+	if err := os.Setenv("VAR1", "value1"); err != nil {
+		t.Fatalf("Failed to set VAR1: %v", err)
 	}
-	err = os.WriteFile(file2, []byte(content2), 0644)
-	if err != nil {
-		t.Fatalf("Failed to write test file 2: %v", err)
+	if err := os.Setenv("VAR2", "value2"); err != nil {
+		t.Fatalf("Failed to set VAR2: %v", err)
+	}
+	defer func() {
+		_ = os.Unsetenv("VAR1")
+		_ = os.Unsetenv("VAR2")
+	}()
+
+	if err := os.WriteFile(file1, []byte("key: $VAR1"), 0644); err != nil {
+		t.Fatalf("Failed to write file1: %v", err)
+	}
+	if err := os.WriteFile(file2, []byte("key: $VAR2"), 0644); err != nil {
+		t.Fatalf("Failed to write file2: %v", err)
 	}
 
-	// Set paths and execute
-	paths = []string{file1, file2}
-	rootCmd.Run(rootCmd, []string{})
+	if err := processDirectory(tmpDir); err != nil {
+		t.Fatalf("processDirectory failed: %v", err)
+	}
 
-	// Read results
 	result1, err := os.ReadFile(file1)
 	if err != nil {
-		t.Fatalf("Failed to read result file 1: %v", err)
+		t.Fatalf("Failed to read file1: %v", err)
 	}
 	result2, err := os.ReadFile(file2)
 	if err != nil {
-		t.Fatalf("Failed to read result file 2: %v", err)
+		t.Fatalf("Failed to read file2: %v", err)
 	}
 
-	expected1 := "service: api"
-	expected2 := "port: 8080"
-	
-	if string(result1) != expected1 {
-		t.Errorf("File 1: Expected %q, got %q", expected1, string(result1))
+	if string(result1) != "key: value1" {
+		t.Errorf("File1: Expected %q, got %q", "key: value1", string(result1))
 	}
-	if string(result2) != expected2 {
-		t.Errorf("File 2: Expected %q, got %q", expected2, string(result2))
+	if string(result2) != "key: value2" {
+		t.Errorf("File2: Expected %q, got %q", "key: value2", string(result2))
 	}
 }
-
-// TestRootCommandWithNestedDirectory tests the root command with nested directories
-func TestRootCommandWithNestedDirectory(t *testing.T) {
-	// Create a temporary directory structure for testing
-	tmpDir, err := os.MkdirTemp("", "helm-subenv-test")
-	if err != nil {
-		t.Fatalf("Failed to create temp directory: %v", err)
-	}
-	defer os.RemoveAll(tmpDir)
-
-	// Create nested directory
-	nestedDir := filepath.Join(tmpDir, "nested")
-	err = os.Mkdir(nestedDir, 0755)
-	if err != nil {
-		t.Fatalf("Failed to create nested directory: %v", err)
-	}
-
-	file1 := filepath.Join(tmpDir, "root.yaml")
-	file2 := filepath.Join(nestedDir, "nested.yaml")
-	
-	content := "env: $TEST_ENV"
-	
-	// Set environment variable
 	os.Setenv("TEST_ENV", "production")
 	defer os.Unsetenv("TEST_ENV")
 

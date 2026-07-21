@@ -122,11 +122,12 @@ func init() {
 	cobra.OnInitialize()
 
 	// Define flags
-	rootCmd.Flags().StringArrayVarP(&paths, "file", "f", []string{}, 
+	rootCmd.Flags().StringArrayVarP(&paths, "file", "f", []string{},
 		"specify path to values file or directory. You can configure the flag multiple times for different files/directories.")
-	
+
 	// Mark the file flag as required
 	if err := rootCmd.MarkFlagRequired("file"); err != nil {
 		fmt.Fprintf(os.Stderr, "Error marking flag as required: %v\n", err)
+		os.Exit(1)
 	}
 }
