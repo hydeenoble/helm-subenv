@@ -19,15 +19,12 @@ linters:
     - gocritic
     - gosec
     - revive
+    - shadow
 
 linters-settings:
   errcheck:
     check-type-assertions: true
     check-blank: true
-  govet:
-    check-shadowing: true
-  gofmt:
-    simplify: true
   gocritic:
     enabled-tags:
       - diagnostic
