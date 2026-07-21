@@ -1,0 +1,54 @@
+run:
+  timeout: 5m
+  tests: true
+  modules-download-mode: readonly
+  coverage: true
+
+linters:
+  enable:
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    - gofmt
+    - goimports
+    - misspell
+    - unconvert
+    - unparam
+    - gocritic
+    - gosec
+    - revive
+    - noctx
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+  govet:
+    check-shadowing: true
+  gofmt:
+    simplify: true
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - experimental
+      - opinionated
+      - performance
+      - style
+  gocov:
+    threshold: 80
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+
+output:
+  format: json
+  print-issued-lines: true
+  print-linter-name: true
+
+coverage:
+  skip-files:
+    - '*_test.go'

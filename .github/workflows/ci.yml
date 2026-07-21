@@ -35,8 +35,28 @@ jobs:
     - name: Download dependencies
       run: go mod download
 
-    - name: Run tests
-      run: go test -v -race -coverprofile=coverage.out ./...
+    - name: Run tests with coverage
+      run: go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
+
+    - name: Generate coverage report
+      if: matrix.os == 'ubuntu-latest' && matrix.go == '1.22'
+      run: |
+        go tool cover -html=coverage.out -o coverage.html
+        COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')
+        echo "COVERAGE=$COVERAGE" >> $GITHUB_ENV
+
+    - name: Check coverage threshold
+      if: matrix.os == 'ubuntu-latest' && matrix.go == '1.22'
+      run: |
+        COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')
+        THRESHOLD=70
+        echo "Coverage: $COVERAGE%"
+        if (( $(echo "$COVERAGE < $THRESHOLD" | bc -l) )); then
+          echo "❌ Coverage $COVERAGE% is below threshold $THRESHOLD%"
+          exit 1
+        else
+          echo "✅ Coverage $COVERAGE% meets threshold $THRESHOLD%"
+        fi
 
     - name: Upload coverage to Codecov
       if: matrix.os == 'ubuntu-latest' && matrix.go == '1.22'
@@ -45,6 +65,14 @@ jobs:
         file: ./coverage.out
         flags: unittests
         name: codecov-umbrella
+        fail_ci_if_error: false
+
+    - name: Upload coverage report
+      if: matrix.os == 'ubuntu-latest' && matrix.go == '1.22'
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: coverage.html
 
   lint:
     name: Lint
