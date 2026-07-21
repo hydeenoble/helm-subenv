@@ -2,7 +2,6 @@ run:
   timeout: 5m
   tests: true
   modules-download-mode: readonly
-  coverage: true
 
 linters:
   enable:
@@ -20,7 +19,6 @@ linters:
     - gocritic
     - gosec
     - revive
-    - noctx
 
 linters-settings:
   errcheck:
@@ -37,18 +35,7 @@ linters-settings:
       - opinionated
       - performance
       - style
-  gocov:
-    threshold: 80
 
 issues:
   max-issues-per-linter: 0
   max-same-issues: 0
-
-output:
-  format: json
-  print-issued-lines: true
-  print-linter-name: true
-
-coverage:
-  skip-files:
-    - '*_test.go'

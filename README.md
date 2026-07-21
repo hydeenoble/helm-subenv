@@ -4,6 +4,7 @@
 [![GitHub release](https://img.shields.io/github/v/release/hydeenoble/helm-subenv.svg)](https://github.com/hydeenoble/helm-subenv/releases)
 [![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/helm-subenv)](https://artifacthub.io/packages/search?repo=helm-subenv)
 [![CI](https://github.com/hydeenoble/helm-subenv/workflows/CI/badge.svg)](https://github.com/hydeenoble/helm-subenv/actions)
+[![codecov](https://codecov.io/gh/hydeenoble/helm-env/branch/main/graph/badge.svg)](https://codecov.io/gh/hydeenoble/helm-env)
 [![Go Report Card](https://goreportcard.com/badge/github.com/hydeenoble/helm-env)](https://goreportcard.com/report/github.com/hydeenoble/helm-env)
 
 A powerful Helm plugin that enables environment variable substitution in your Helm values files, perfect for CI/CD pipelines and dynamic configuration management.
