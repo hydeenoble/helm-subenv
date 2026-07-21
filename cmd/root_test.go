@@ -172,7 +172,6 @@ func TestExpandEnv(t *testing.T) {
 		}
 	})
 }
-}
 
 // TestProcessPath tests the processPath function with a single file
 func TestProcessPath(t *testing.T) {

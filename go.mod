@@ -1,6 +1,6 @@
 module github.com/hydeenoble/helm-env
 
-go 1.26
+go 1.25
 
 require (
 	github.com/a8m/envsubst v1.4.2
