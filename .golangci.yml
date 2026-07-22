@@ -1,5 +1,3 @@
-version: 2
-
 run:
   timeout: 5m
   tests: true
@@ -19,7 +17,7 @@ linters:
     - gosec
     - revive
 
-linters-settings:
+settings:
   errcheck:
     check-type-assertions: true
     check-blank: true
