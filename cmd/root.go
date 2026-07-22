@@ -140,8 +140,8 @@ func validateSubstitution(_ string, originalContent, newContent string) error {
 
 	// Check for patterns that might indicate bash arrays
 	if detectBashArrayPatterns(originalContent) {
-		return fmt.Errorf("file may contain bash array variables which are not supported. "+
-			"Bash arrays cannot be substituted. Use space-separated or comma-separated strings instead. "+
+		return fmt.Errorf("file may contain bash array variables which are not supported. " +
+			"Bash arrays cannot be substituted. Use space-separated or comma-separated strings instead. " +
 			"See: https://github.com/hydeenoble/helm-subenv#known-limitations")
 	}
 

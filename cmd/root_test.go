@@ -307,12 +307,12 @@ func TestDetectEmptyVariables(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Unset all potential test variables
-		_ = os.Unsetenv("MISSING_VAR")
-		_ = os.Unsetenv("VAR1")
-		_ = os.Unsetenv("VAR2")
-		_ = os.Unsetenv("DB_HOST")
-		_ = os.Unsetenv("DB_PORT")
-		_ = os.Unsetenv("IMAGE_TAG")
+			_ = os.Unsetenv("MISSING_VAR")
+			_ = os.Unsetenv("VAR1")
+			_ = os.Unsetenv("VAR2")
+			_ = os.Unsetenv("DB_HOST")
+			_ = os.Unsetenv("DB_PORT")
+			_ = os.Unsetenv("IMAGE_TAG")
 			// Set specified environment variables
 			for key, value := range tt.setEnvVars {
 				if err := os.Setenv(key, value); err != nil {
