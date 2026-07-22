@@ -88,9 +88,9 @@ jobs:
           go-version: "1.26"
 
       - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v5
+        uses: golangci/golangci-lint-action@v4
         with:
-          version: v1.67.0
+          version: latest
 
   build:
     name: Build

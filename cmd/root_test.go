@@ -259,39 +259,3 @@ func TestProcessDirectory(t *testing.T) {
 		t.Errorf("File2: Expected %q, got %q", "key: value2", string(result2))
 	}
 }
-	os.Setenv("TEST_ENV", "production")
-	defer os.Unsetenv("TEST_ENV")
-
-	// Write test files
-	err = os.WriteFile(file1, []byte(content), 0644)
-	if err != nil {
-		t.Fatalf("Failed to write test file 1: %v", err)
-	}
-	err = os.WriteFile(file2, []byte(content), 0644)
-	if err != nil {
-		t.Fatalf("Failed to write test file 2: %v", err)
-	}
-
-	// Set paths and execute
-	paths = []string{tmpDir}
-	rootCmd.Run(rootCmd, []string{})
-
-	// Read results
-	result1, err := os.ReadFile(file1)
-	if err != nil {
-		t.Fatalf("Failed to read result file 1: %v", err)
-	}
-	result2, err := os.ReadFile(file2)
-	if err != nil {
-		t.Fatalf("Failed to read result file 2: %v", err)
-	}
-
-	expected := "env: production"
-	
-	if string(result1) != expected {
-		t.Errorf("Root file: Expected %q, got %q", expected, string(result1))
-	}
-	if string(result2) != expected {
-		t.Errorf("Nested file: Expected %q, got %q", expected, string(result2))
-	}
-}
