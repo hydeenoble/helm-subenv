@@ -1,0 +1,33 @@
+coverage:
+  precision: 2
+  round: down
+  range: "48...100"
+
+ignore:
+  - "**/*_test.go"
+  - "**/vendor"
+  - "**/mocks"
+
+codecov:
+  require_ci_to_pass: true
+
+comment:
+  layout: "reach,diff,flags,tree"
+  behavior: default
+  require_changes: false
+
+flags:
+  unittests:
+    carryforward: true
+
+pulls:
+  default:
+    threshold: 1%
+    branches: null
+    base: auto
+
+project:
+  default:
+    threshold: 2%
+    branches: null
+    base: auto

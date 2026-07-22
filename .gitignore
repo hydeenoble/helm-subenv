@@ -1,2 +1,18 @@
 subenv
 releases/*
+
+# Test coverage
+coverage.out
+coverage.html
+*.coverprofile
+coverage/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build
+bin/
+dist/
