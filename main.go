@@ -1,3 +1,4 @@
+// Package main provides the helm-subenv plugin entry point
 package main
 
 import (

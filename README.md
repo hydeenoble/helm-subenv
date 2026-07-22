@@ -275,6 +275,60 @@ The plugin supports two syntax styles:
 - **Recursive Processing**: When processing directories, all files are processed recursively
 - **Error Handling**: The plugin will exit with an error if any file cannot be processed
 
+## ⚠️ Known Limitations
+
+### Environment Variables Must Be Exported
+
+For environment variables to be accessible to the plugin, they **must be explicitly exported**. Variables set with only `source` command are not visible to child processes.
+
+**❌ Won't work**:
+```bash
+source ./environment.sh  # Variables not visible to helm-subenv
+helm subenv -f values.yaml  # Variables will be empty
+```
+
+**✅ Works**:
+```bash
+export VAR_NAME="value"  # Explicitly export the variable
+helm subenv -f values.yaml  # Variable will be substituted correctly
+```
+
+Or in your environment file:
+```bash
+# environment.sh
+export IMAGE_REGISTRY="docker.io"
+export IMAGE_NAME="myapp"
+export IMAGE_TAG="v1.0.0"
+```
+
+Then:
+```bash
+source ./environment.sh
+helm subenv -f values.yaml
+```
+
+### Bash Arrays Not Supported
+
+The plugin uses the `envsubst` library which only supports scalar environment variables. **Bash array variables are not supported** and may cause unexpected behavior.
+
+**❌ Won't work**:
+```bash
+export COMPONENTS=("component1" "component2" "component3")
+helm subenv -f values.yaml  # Array will not be substituted correctly
+```
+
+**✅ Recommended alternative** - Use space-separated strings instead:
+```bash
+export COMPONENTS="component1 component2 component3"
+helm subenv -f values.yaml  # String will be substituted correctly
+```
+
+Or use comma-separated values:
+```bash
+export COMPONENTS="component1,component2,component3"
+helm subenv -f values.yaml
+```
+
 ## 🛠️ Development
 
 ### Prerequisites
