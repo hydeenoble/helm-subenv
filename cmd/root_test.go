@@ -33,7 +33,7 @@ func TestExpandEnv(t *testing.T) {
 		}()
 
 		// Write test file
-		err := os.WriteFile(testFile, []byte(content), 0644)
+		err := os.WriteFile(testFile, []byte(content), 0o600)
 		if err != nil {
 			t.Fatalf("Failed to write test file: %v", err)
 		}
@@ -64,7 +64,7 @@ func TestExpandEnv(t *testing.T) {
 		_ = os.Unsetenv("NONEXISTENT_VAR")
 
 		// Write test file
-		err := os.WriteFile(testFile, []byte(content), 0644)
+		err := os.WriteFile(testFile, []byte(content), 0o600)
 		if err != nil {
 			t.Fatalf("Failed to write test file: %v", err)
 		}
@@ -108,7 +108,7 @@ func TestExpandEnv(t *testing.T) {
 		}()
 
 		// Write test file
-		if err := os.WriteFile(testFile, []byte(content), 0644); err != nil {
+		if err := os.WriteFile(testFile, []byte(content), 0o600); err != nil {
 			t.Fatalf("Failed to write test file: %v", err)
 		}
 
@@ -151,7 +151,7 @@ func TestExpandEnv(t *testing.T) {
 		}()
 
 		// Write test file
-		if err := os.WriteFile(testFile, []byte(content), 0644); err != nil {
+		if err := os.WriteFile(testFile, []byte(content), 0o600); err != nil {
 			t.Fatalf("Failed to write test file: %v", err)
 		}
 
@@ -191,7 +191,7 @@ func TestProcessPath(t *testing.T) {
 		_ = os.Unsetenv("TEST_VAR")
 	}()
 
-	if err := os.WriteFile(testFile, []byte(content), 0644); err != nil {
+	if err := os.WriteFile(testFile, []byte(content), 0o600); err != nil {
 		t.Fatalf("Failed to write test file: %v", err)
 	}
 
@@ -232,10 +232,10 @@ func TestProcessDirectory(t *testing.T) {
 		_ = os.Unsetenv("VAR2")
 	}()
 
-	if err := os.WriteFile(file1, []byte("key: $VAR1"), 0644); err != nil {
+	if err := os.WriteFile(file1, []byte("key: $VAR1"), 0o600); err != nil {
 		t.Fatalf("Failed to write file1: %v", err)
 	}
-	if err := os.WriteFile(file2, []byte("key: $VAR2"), 0644); err != nil {
+	if err := os.WriteFile(file2, []byte("key: $VAR2"), 0o600); err != nil {
 		t.Fatalf("Failed to write file2: %v", err)
 	}
 

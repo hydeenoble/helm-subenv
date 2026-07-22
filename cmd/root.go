@@ -46,7 +46,7 @@ Environment variables can be referenced using $VAR or ${VAR} syntax.`,
 }
 
 // run is the main execution function for the root command
-func run(cmd *cobra.Command, args []string) error {
+func run(_ *cobra.Command, _ []string) error {
 	if len(paths) == 0 {
 		return fmt.Errorf("at least one file or directory path must be specified using -f flag")
 	}
@@ -103,8 +103,8 @@ func expandEnv(filePath string) error {
 	}
 
 	// Write the substituted content back to the file
-	// Use 0644 permissions (rw-r--r--) instead of 0777 for security
-	if err := os.WriteFile(filePath, []byte(newContent), 0644); err != nil {
+	// Use 0o600 permissions (rw-------) for security
+	if err := os.WriteFile(filePath, newContent, 0o600); err != nil {
 		return fmt.Errorf("failed to write file: %w", err)
 	}
 
