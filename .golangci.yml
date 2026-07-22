@@ -1,47 +1,36 @@
-version: "2"
+version: 2
+
 run:
-  modules-download-mode: readonly
+  timeout: 5m
   tests: true
+  modules-download-mode: readonly
+
 linters:
   enable:
-    - gocritic
-    - gosec
+    - errcheck
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
     - misspell
-    - revive
     - unconvert
     - unparam
-  settings:
-    errcheck:
-      check-type-assertions: true
-      check-blank: true
-    gocritic:
-      enabled-tags:
-        - diagnostic
-        - experimental
-        - opinionated
-        - performance
-        - style
-  exclusions:
-    generated: lax
-    presets:
-      - comments
-      - common-false-positives
-      - legacy
-      - std-error-handling
-    paths:
-      - third_party$
-      - builtin$
-      - examples$
+    - gocritic
+    - gosec
+    - revive
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - experimental
+      - opinionated
+      - performance
+      - style
+
 issues:
   max-issues-per-linter: 0
   max-same-issues: 0
-formatters:
-  enable:
-    - gofmt
-    - goimports
-  exclusions:
-    generated: lax
-    paths:
-      - third_party$
-      - builtin$
-      - examples$
