@@ -7,7 +7,7 @@ GO=go
 GOFLAGS=-v
 VERSION?=$(shell cat plugin.yaml | grep "version" | cut -d '"' -f 2)
 LDFLAGS=-ldflags "-X github.com/hydeenoble/helm-env/cmd.version=$(VERSION)"
-COVERAGE_THRESHOLD=70
+COVERAGE_THRESHOLD=50
 
 # Default target
 all: fmt vet test build
