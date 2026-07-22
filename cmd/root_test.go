@@ -13,7 +13,7 @@ func TestExpandEnv(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create temp directory: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() { _ = os.RemoveAll(tmpDir) }()
 
 	// Test case 1: Simple environment variable substitution
 	t.Run("SimpleSubstitution", func(t *testing.T) {
@@ -44,7 +44,7 @@ func TestExpandEnv(t *testing.T) {
 		}
 
 		// Read result
-		result, err := os.ReadFile(testFile)
+		result, err := os.ReadFile(testFile) // nolint:gosec
 		if err != nil {
 			t.Fatalf("Failed to read result file: %v", err)
 		}
@@ -75,7 +75,7 @@ func TestExpandEnv(t *testing.T) {
 		}
 
 		// Read result
-		result, err := os.ReadFile(testFile)
+		result, err := os.ReadFile(testFile) // nolint:gosec
 		if err != nil {
 			t.Fatalf("Failed to read result file: %v", err)
 		}
@@ -118,7 +118,7 @@ func TestExpandEnv(t *testing.T) {
 		}
 
 		// Read result
-		result, err := os.ReadFile(testFile)
+		result, err := os.ReadFile(testFile) // nolint:gosec
 		if err != nil {
 			t.Fatalf("Failed to read result file: %v", err)
 		}
@@ -161,7 +161,7 @@ func TestExpandEnv(t *testing.T) {
 		}
 
 		// Read result
-		result, err := os.ReadFile(testFile)
+		result, err := os.ReadFile(testFile) // nolint:gosec
 		if err != nil {
 			t.Fatalf("Failed to read result file: %v", err)
 		}
@@ -179,7 +179,7 @@ func TestProcessPath(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create temp directory: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() { _ = os.RemoveAll(tmpDir) }()
 
 	testFile := filepath.Join(tmpDir, "test.yaml")
 	content := "value: $TEST_VAR"
@@ -199,7 +199,7 @@ func TestProcessPath(t *testing.T) {
 		t.Fatalf("processPath failed: %v", err)
 	}
 
-	result, err := os.ReadFile(testFile)
+	result, err := os.ReadFile(testFile) // nolint:gosec
 	if err != nil {
 		t.Fatalf("Failed to read result file: %v", err)
 	}
@@ -216,7 +216,7 @@ func TestProcessDirectory(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create temp directory: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() { _ = os.RemoveAll(tmpDir) }()
 
 	file1 := filepath.Join(tmpDir, "file1.yaml")
 	file2 := filepath.Join(tmpDir, "file2.yaml")
@@ -243,11 +243,11 @@ func TestProcessDirectory(t *testing.T) {
 		t.Fatalf("processDirectory failed: %v", err)
 	}
 
-	result1, err := os.ReadFile(file1)
+	result1, err := os.ReadFile(file1) // nolint:gosec
 	if err != nil {
 		t.Fatalf("Failed to read file1: %v", err)
 	}
-	result2, err := os.ReadFile(file2)
+	result2, err := os.ReadFile(file2) // nolint:gosec
 	if err != nil {
 		t.Fatalf("Failed to read file2: %v", err)
 	}
@@ -257,5 +257,118 @@ func TestProcessDirectory(t *testing.T) {
 	}
 	if string(result2) != "key: value2" {
 		t.Errorf("File2: Expected %q, got %q", "key: value2", string(result2))
+	}
+}
+
+// TestDetectEmptyVariables tests detection of empty variable substitutions
+func TestDetectEmptyVariables(t *testing.T) {
+	tests := []struct {
+		name             string
+		originalContent  string
+		newContent       string
+		setEnvVars       map[string]string
+		expectedVars     []string
+		shouldHaveResult bool
+	}{
+		{
+			name:             "NoEmptyVariables",
+			originalContent:  "image: $IMAGE_TAG",
+			newContent:       "image: v1.0.0",
+			setEnvVars:       map[string]string{"IMAGE_TAG": "v1.0.0"},
+			expectedVars:     []string{},
+			shouldHaveResult: false,
+		},
+		{
+			name:             "EmptyVariable",
+			originalContent:  "image: $MISSING_VAR",
+			newContent:       "image: ",
+			setEnvVars:       map[string]string{},
+			expectedVars:     []string{"MISSING_VAR"},
+			shouldHaveResult: true,
+		},
+		{
+			name:             "MultipleEmptyVariables",
+			originalContent:  "config: $VAR1 and $VAR2",
+			newContent:       "config:  and ",
+			setEnvVars:       map[string]string{},
+			expectedVars:     []string{"VAR1", "VAR2"},
+			shouldHaveResult: true,
+		},
+		{
+			name:             "BracesSyntax",
+			originalContent:  "url: ${DB_HOST}:${DB_PORT}",
+			newContent:       "url: :",
+			setEnvVars:       map[string]string{},
+			expectedVars:     []string{"DB_HOST", "DB_PORT"},
+			shouldHaveResult: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Unset all potential test variables
+			_ = os.Unsetenv("MISSING_VAR")
+			_ = os.Unsetenv("VAR1")
+			_ = os.Unsetenv("VAR2")
+			_ = os.Unsetenv("DB_HOST")
+			_ = os.Unsetenv("DB_PORT")
+			_ = os.Unsetenv("IMAGE_TAG")
+			// Set specified environment variables
+			for key, value := range tt.setEnvVars {
+				if err := os.Setenv(key, value); err != nil {
+					t.Fatalf("Failed to set env var: %v", err)
+				}
+				// Capture key for defer
+				capturedKey := key
+				defer func() { _ = os.Unsetenv(capturedKey) }()
+			}
+
+			result := detectEmptyVariables(tt.originalContent, tt.newContent)
+
+			if tt.shouldHaveResult && len(result) == 0 {
+				t.Errorf("Expected empty variables to be detected, but got none")
+			}
+			if !tt.shouldHaveResult && len(result) > 0 {
+				t.Errorf("Expected no empty variables, but got: %v", result)
+			}
+		})
+	}
+}
+
+// TestDetectBashArrayPatterns tests detection of bash array patterns
+func TestDetectBashArrayPatterns(t *testing.T) {
+	tests := []struct {
+		name        string
+		content     string
+		shouldMatch bool
+	}{
+		{
+			name:        "NoArrayPattern",
+			content:     "image: docker.io/myapp:v1.0.0",
+			shouldMatch: false,
+		},
+		{
+			name:        "ScalarVariable",
+			content:     "$IMAGE_NAME and $IMAGE_TAG",
+			shouldMatch: false,
+		},
+		{
+			name:        "BracesSyntaxNoArray",
+			content:     "${VAR1} and ${VAR2}",
+			shouldMatch: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := detectBashArrayPatterns(tt.content)
+
+			if tt.shouldMatch && !result {
+				t.Errorf("Expected array pattern to be detected, but it wasn't")
+			}
+			if !tt.shouldMatch && result {
+				t.Errorf("Expected no array pattern, but one was detected")
+			}
+		})
 	}
 }
