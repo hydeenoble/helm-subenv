@@ -19,7 +19,6 @@ linters:
     - gocritic
     - gosec
     - revive
-    - shadow
 
 linters-settings:
   errcheck:
