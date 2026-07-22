@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        go: ["1.26"]
+        go: ["1.21", "1.26"]
 
     steps:
       - name: Checkout code
@@ -36,17 +36,17 @@ jobs:
         run: go mod download
 
       - name: Run tests with coverage
-        run: go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
+        run: go test -v -race -coverprofile=coverage.out ./...
 
       - name: Generate coverage report
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-latest' && matrix.go == '1.26'
         run: |
           go tool cover -html=coverage.out -o coverage.html
           COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')
           echo "COVERAGE=$COVERAGE" >> $GITHUB_ENV
 
       - name: Check coverage threshold
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-latest' && matrix.go == '1.26'
         run: |
           COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')
           THRESHOLD=50
@@ -59,7 +59,7 @@ jobs:
           fi
 
       - name: Upload coverage to Codecov
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-latest' && matrix.go == '1.26'
         uses: codecov/codecov-action@v4
         with:
           file: ./coverage.out
@@ -68,7 +68,7 @@ jobs:
           fail_ci_if_error: false
 
       - name: Upload coverage report
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-latest' && matrix.go == '1.26'
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
@@ -85,7 +85,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.26"
+          go-version: "1.21"
 
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v4
